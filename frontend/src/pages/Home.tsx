@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { uploadImages } from "../services/imageServices";
 
 const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -10,12 +11,12 @@ const Home = () => {
     }
   };
 
-  const handleSubmit = async() => {
+  const handleSubmit = async (e: React.FormEvent) => {
     try {
-        
-    } catch (error) {
-        
-    }
+      e.preventDefault();
+      const response =await uploadImages(selectedFiles);
+      console.log(response)
+    } catch (error) {}
   };
 
   return (
@@ -41,25 +42,37 @@ const Home = () => {
                      cursor-pointer"
           />
         </label>
+        <button
+          className="m-2 w-full bg-green-500 hover:bg-green-600"
+          type="submit"
+        >
+          Submit
+        </button>
       </form>
 
-      { selectedFiles.length > 0 && (
+      {selectedFiles.length > 0 && (
         <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-4 w-full">
           {selectedFiles.map((file, idx) => (
-            <div key={idx} className="relative rounded overflow-hidden border border-gray-300 shadow-sm p-2">
+            <div
+              key={idx}
+              className="relative rounded overflow-hidden border border-gray-300 shadow-sm p-2"
+            >
               <img
                 src={URL.createObjectURL(file)}
                 alt={`preview-${idx}`}
                 className="object-cover "
               />
-              <p><span className="text-blue-600">File name:</span> {file.name}</p>
-              <p><span className="text-blue-600">File size:</span> {Math.floor(file.size/1000)} KB</p>
-
+              <p>
+                <span className="text-blue-600">File name:</span> {file.name}
+              </p>
+              <p>
+                <span className="text-blue-600">File size:</span>{" "}
+                {Math.floor(file.size / 1000)} KB
+              </p>
             </div>
           ))}
         </div>
       )}
-
     </div>
   );
 };
