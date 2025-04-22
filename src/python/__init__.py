@@ -1,0 +1,2 @@
+
+from normalize_image import normalize_for_comparison
