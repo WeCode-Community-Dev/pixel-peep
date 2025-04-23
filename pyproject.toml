@@ -1,0 +1,13 @@
+# pyproject.toml
+[build-system]
+requires = ["setuptools>=42"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imagecompare"
+version = "0.1.0"
+description = "Image comparison toolkit with multiple algorithms and interfaces"
+
+[project.optional-dependencies]
+cli = ["click>=8.0"]  # Only needed for CLI
+web = ["fastapi>=0.85", "uvicorn>=0.19"]  # Only needed for web API
