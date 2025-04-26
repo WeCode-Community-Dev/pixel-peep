@@ -1,6 +1,7 @@
 from fastapi import FastAPI
+from fastapi import UploadFile,File
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi import APIRouter ,HTTPException,UploadFile,File,Form
+from services.image_compare import img_classification
 
 origins = [
     "http://localhost:5173",
@@ -22,5 +23,14 @@ app.add_middleware(
 
 @app.post("/images")
 async def uploadfiles(images:list[UploadFile ]=File(...)):
-    print(images)
+
+    image=await img_classification(images)
+
     return {"message": "file uploaded"}
+
+
+
+
+
+
+    

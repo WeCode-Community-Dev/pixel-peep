@@ -1,0 +1,63 @@
+import cv2 # type: ignore
+import numpy as np # type: ignore
+from fastapi import UploadFile
+# from PIL import Image # type: ignore
+
+async def img_classification(images:list[UploadFile]):
+    histograms=[]
+    for image in images:
+        img=read_image(image)
+        histograms.append(compute_histogram(img))
+    com_mtx=create_comparison_matrix(histograms)
+    print(com_mtx)
+
+    
+def read_image(upload_file: UploadFile):
+    """Convert UploadFile to OpenCV image (numpy array)."""
+    image_bytes = upload_file.file.read()
+    # Create a NumPy array from the raw image bytes
+    np_array = np.frombuffer(image_bytes, np.uint8)
+
+    # Decode the NumPy array into an OpenCV image in BGR color format
+    return cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+
+def compute_histogram(image):
+    """Compute HSV histogram for the image."""
+
+    #convert image from BGR to HSV color format
+    hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
+
+    #calculate histogram for the Hue channel
+    hist = cv2.calcHist([hsv], [0], None, [50], [0, 180]) 
+    cv2.normalize(hist, hist, alpha=0, beta=1, norm_type=cv2.NORM_MINMAX)
+    hist += 1e-6 # Add a small value to the histograms to avoid zero values
+    return hist
+
+def compare_histograms(hist1, hist2):
+    """Compare two histograms using multiple methods."""
+
+    # if value near to 1 the images are similar
+    correlation = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)) 
+
+    # if is smaller the images are similar
+    chi_Square = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR))
+    
+    # if value near to 1 the images are similar
+    intersection = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT))/float(cv2.compareHist(hist1, hist1, cv2.HISTCMP_INTERSECT))
+    
+    # if value near to 0 the images are similar
+    bhattacharyya = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA))
+
+
+    final_similarity=(correlation+intersection + (1-bhattacharyya) + (1/(1+chi_Square)))/4
+    return final_similarity
+
+def create_comparison_matrix(histograms):
+    n = len(histograms)
+    comparison_matrix = np.zeros((n, n))
+    # Fill the matrix with similarity scores
+    for i in range(n):
+        for j in range(n):
+            score=compare_histograms(histograms[i],histograms[j])
+            comparison_matrix[i][j]=score
+    return comparison_matrix
