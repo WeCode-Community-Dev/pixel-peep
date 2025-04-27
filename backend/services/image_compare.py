@@ -2,6 +2,7 @@ import cv2 # type: ignore
 import numpy as np # type: ignore
 from fastapi import UploadFile
 # from PIL import Image # type: ignore
+from services.graph import Graph
 
 async def img_classification(images:list[UploadFile]):
     histograms=[]
@@ -9,7 +10,8 @@ async def img_classification(images:list[UploadFile]):
         img=read_image(image)
         histograms.append(compute_histogram(img))
     com_mtx=create_comparison_matrix(histograms)
-    print(com_mtx)
+    groups=group_images(com_mtx)
+    return groups
 
     
 def read_image(upload_file: UploadFile):
@@ -40,7 +42,9 @@ def compare_histograms(hist1, hist2):
     correlation = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_CORREL)) 
 
     # if is smaller the images are similar
-    chi_Square = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR))
+    chi_sq_1 = cv2.compareHist(hist1, hist2, cv2.HISTCMP_CHISQR)
+    chi_sq_2 = cv2.compareHist(hist2, hist1, cv2.HISTCMP_CHISQR)
+    chi_square_final = (chi_sq_1 + chi_sq_2) / 2
     
     # if value near to 1 the images are similar
     intersection = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_INTERSECT))/float(cv2.compareHist(hist1, hist1, cv2.HISTCMP_INTERSECT))
@@ -48,8 +52,8 @@ def compare_histograms(hist1, hist2):
     # if value near to 0 the images are similar
     bhattacharyya = float(cv2.compareHist(hist1, hist2, cv2.HISTCMP_BHATTACHARYYA))
 
+    final_similarity=(correlation+intersection + (1-bhattacharyya) + (1/(1+chi_square_final * 0.1)))/4
 
-    final_similarity=(correlation+intersection + (1-bhattacharyya) + (1/(1+chi_Square)))/4
     return final_similarity
 
 def create_comparison_matrix(histograms):
@@ -61,3 +65,19 @@ def create_comparison_matrix(histograms):
             score=compare_histograms(histograms[i],histograms[j])
             comparison_matrix[i][j]=score
     return comparison_matrix
+
+def group_images(matrix):
+    # Set your similarity threshold
+    threshold = 0.75
+
+    n=len(matrix)
+    graph=Graph()
+    for i in range(n):
+        graph.add_node(i)
+        for j in range(n):
+            if matrix[i][j]>=threshold and i!=j:
+                graph.add_edge(i,j)
+
+    groups=graph.get_connected_components()
+
+    return groups

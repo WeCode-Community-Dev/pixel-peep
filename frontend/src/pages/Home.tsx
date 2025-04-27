@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { uploadImages } from "../services/imageServices";
+import ImageGroups from "../components/ImageGroups";
+import ImagePreview from "../components/Image";
+import axios from "axios";
 
 const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-
+  const [groups, setGroups] = useState<File[][]>([]);
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setGroups([])
     const files = e.target.files;
     if (files) {
       setSelectedFiles(Array.from(files));
@@ -14,9 +18,26 @@ const Home = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
-      const response =await uploadImages(selectedFiles);
-      console.log(response)
-    } catch (error) {}
+      const response = await uploadImages(selectedFiles);
+      const grps: File[][] = [];
+      response.groups.forEach((group: number[]) => {
+        const grp: File[] = [];
+        group.forEach((idx) => {
+          grp.push(selectedFiles[idx]);
+        });
+        grps.push(grp);
+      });
+      setGroups(grps);
+      setSelectedFiles([])
+    } catch (error) {
+      if (axios.isAxiosError(error)) {
+        // Axios error (network/server related)
+        console.error('Axios error:', error.response?.data || error.message);
+      } else {
+        // Non-Axios error (JS runtime error)
+        console.error('Unexpected error:', error);
+      }
+    }
   };
 
   return (
@@ -53,26 +74,13 @@ const Home = () => {
       {selectedFiles.length > 0 && (
         <div className="p-4 grid grid-cols-2 sm:grid-cols-3 gap-4 w-full">
           {selectedFiles.map((file, idx) => (
-            <div
-              key={idx}
-              className="relative rounded overflow-hidden border border-gray-300 shadow-sm p-2"
-            >
-              <img
-                src={URL.createObjectURL(file)}
-                alt={`preview-${idx}`}
-                className="object-cover "
-              />
-              <p>
-                <span className="text-blue-600">File name:</span> {file.name}
-              </p>
-              <p>
-                <span className="text-blue-600">File size:</span>{" "}
-                {Math.floor(file.size / 1000)} KB
-              </p>
-            </div>
+            <ImagePreview file={file} index={idx}/>
+  
           ))}
         </div>
       )}
+
+     {groups.length>0 && <ImageGroups groups={groups} />}
     </div>
   );
 };

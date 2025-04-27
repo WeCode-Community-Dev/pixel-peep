@@ -24,9 +24,9 @@ app.add_middleware(
 @app.post("/images")
 async def uploadfiles(images:list[UploadFile ]=File(...)):
 
-    image=await img_classification(images)
+    groups=await img_classification(images)
 
-    return {"message": "file uploaded"}
+    return {"message": "file uploaded",'groups':groups}
 
 
 
