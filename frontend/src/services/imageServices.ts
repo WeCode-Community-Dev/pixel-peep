@@ -12,7 +12,7 @@ export const uploadImages = async (images: File[]) => {
     return response.data
   } catch (error) {
     if (error instanceof AxiosError){
-        throw new Error(error.response?.data)
+        throw new Error(error.response?.data?.detail)
     }
   }
 };

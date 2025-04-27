@@ -2,7 +2,6 @@ import { useState } from "react";
 import { uploadImages } from "../services/imageServices";
 import ImageGroups from "../components/ImageGroups";
 import ImagePreview from "../components/Image";
-import axios from "axios";
 
 const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -30,12 +29,13 @@ const Home = () => {
       setGroups(grps);
       setSelectedFiles([])
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        // Axios error (network/server related)
-        console.error('Axios error:', error.response?.data || error.message);
+      if (error instanceof Error) {
+        // Axios error (network/server related)   
+        console.error('error:', error.message);
+        alert(error.message)
       } else {
         // Non-Axios error (JS runtime error)
-        console.error('Unexpected error:', error);
+        console.error('Unexpected error:');
       }
     }
   };
@@ -51,7 +51,7 @@ const Home = () => {
         <label className="w-full">
           <input
             type="file"
-            accept="image/*"
+            accept=".jpg, .jpeg, .png, .bmp, .webp, .tiff, .gif"
             multiple
             onChange={handleFileChange}
             className="block w-full text-sm text-gray-200

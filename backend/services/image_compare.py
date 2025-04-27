@@ -1,12 +1,22 @@
 import cv2 # type: ignore
 import numpy as np # type: ignore
-from fastapi import UploadFile
+from fastapi import HTTPException, UploadFile
 # from PIL import Image # type: ignore
 from services.graph import Graph
+
+ALLOWED_EXTENSIONS = {'jpg', 'jpeg', 'png', 'bmp', 'webp', 'tiff', 'gif'}
+
+def is_allowed_file(filename: str | None) -> bool:
+    if filename:
+        return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+    return False
 
 async def img_classification(images:list[UploadFile]):
     histograms=[]
     for image in images:
+        if not is_allowed_file(image.filename):
+            raise HTTPException(status_code=400, detail=f"File '{image.filename}' is not allowed. SVG files are blocked.")
+    
         img=read_image(image)
         histograms.append(compute_histogram(img))
     com_mtx=create_comparison_matrix(histograms)

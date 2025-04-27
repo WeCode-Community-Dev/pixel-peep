@@ -15,7 +15,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ file, index }) => {
       <img
         src={fileUrl}
         alt={`preview-${index}`}
-        className="object-cover w-full h-48 rounded"
+        className="object-cover w-full  rounded"
       />
       <div className="mt-2 text-sm">
         <p>
