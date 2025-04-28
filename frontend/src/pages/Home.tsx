@@ -6,8 +6,9 @@ import ImagePreview from "../components/Image";
 const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [groups, setGroups] = useState<File[][]>([]);
+  const [orgArr,setOrgArr]=useState<number[]>([]) // for original array indexes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setGroups([])
+    setGroups([]) //remove groups while change inputs
     const files = e.target.files;
     if (files) {
       setSelectedFiles(Array.from(files));
@@ -18,23 +19,25 @@ const Home = () => {
     try {
       e.preventDefault();
       const response = await uploadImages(selectedFiles);
-      const grps: File[][] = [];
+      const grps: File[][] = [];     
+      const originals=new Set(response.originals) 
       response.groups.forEach((group: number[]) => {
         const grp: File[] = [];
-        group.forEach((idx) => {
+        group.forEach((idx,i) => {
+          if (originals.has(idx)){
+            setOrgArr(prev=>([...prev,i]))
+          }
           grp.push(selectedFiles[idx]);
         });
         grps.push(grp);
       });
       setGroups(grps);
-      setSelectedFiles([])
+      setSelectedFiles([]) 
     } catch (error) {
-      if (error instanceof Error) {
-        // Axios error (network/server related)   
+      if (error instanceof Error) {   
         console.error('error:', error.message);
         alert(error.message)
       } else {
-        // Non-Axios error (JS runtime error)
         console.error('Unexpected error:');
       }
     }
@@ -61,6 +64,7 @@ const Home = () => {
                      file:bg-blue-50 file:text-blue-700
                      hover:file:bg-blue-100
                      cursor-pointer"
+            required
           />
         </label>
         <button
@@ -80,7 +84,7 @@ const Home = () => {
         </div>
       )}
 
-     {groups.length>0 && <ImageGroups groups={groups} />}
+     {groups.length>0 && <ImageGroups groups={groups} originals={orgArr} />}
     </div>
   );
 };

@@ -13,25 +13,39 @@ def is_allowed_file(filename: str | None) -> bool:
 
 async def img_classification(images:list[UploadFile]):
     histograms=[]
+    cv2_images=[]
+    file_sizes=[]
     for image in images:
         if not is_allowed_file(image.filename):
             raise HTTPException(status_code=400, detail=f"File '{image.filename}' is not allowed. SVG files are blocked.")
     
-        img=read_image(image)
+        img,file_size=read_image(image)
+        cv2_images.append(img)
+        file_sizes.append(file_size)
+
         histograms.append(compute_histogram(img))
     com_mtx=create_comparison_matrix(histograms)
     groups=group_images(com_mtx)
-    return groups
+    originals=set()
+    for group in groups:
+        original=find_original(cv2_images,group,com_mtx,file_sizes)
+        originals.add(original)
 
+    return groups,originals
+    
     
 def read_image(upload_file: UploadFile):
     """Convert UploadFile to OpenCV image (numpy array)."""
     image_bytes = upload_file.file.read()
+    file_size = len(image_bytes)
+
     # Create a NumPy array from the raw image bytes
     np_array = np.frombuffer(image_bytes, np.uint8)
 
     # Decode the NumPy array into an OpenCV image in BGR color format
-    return cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+    image=cv2.imdecode(np_array, cv2.IMREAD_COLOR)
+
+    return image ,file_size
 
 def compute_histogram(image):
     """Compute HSV histogram for the image."""
@@ -91,3 +105,49 @@ def group_images(matrix):
     groups=graph.get_connected_components()
 
     return groups
+
+def find_original(images, group,com_matrix,file_sizes):
+    scores=[]
+    for i in group:
+        image=images[i]
+
+        sharp_score=compute_sharpness(image)
+
+        size_score=file_sizes[i]*0.01
+
+        resolution=image.shape[0]*image.shape[1]*0.001
+
+        similarity_score=compute_similarity(i,group,com_matrix)
+
+        score=similarity_score+sharp_score+resolution+size_score
+        scores.append({i:score})
+        print(i,sharp_score,size_score,resolution,similarity_score)
+
+    key=max_score(scores)
+
+    print(key)
+    return key
+def max_score(scores):
+    max_score = float('-inf')
+    max_key = None
+
+    for score_dict in scores:
+        for key, value in score_dict.items():
+            if value > max_score:
+                max_score = value
+                max_key = key
+    return max_key
+    
+        
+    
+
+def compute_similarity(index,group,com_matrix):
+    total_similarity=0
+    for i in group:
+        total_similarity+=com_matrix[index][i]
+    return total_similarity
+        
+
+def compute_sharpness(image: np.ndarray) -> float:
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    return cv2.Laplacian(gray, cv2.CV_64F).var()
