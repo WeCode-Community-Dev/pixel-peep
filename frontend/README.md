@@ -1,3 +1,19 @@
+ **Frontend Setup**
+   1. Navigate to the frontend directory:
+       ```bash
+      cd frontend
+       ```
+   2. Install dependencies:
+       ```bash
+      npm install
+       ```
+    
+   3. Start the development server:
+      ```bash
+      npm run dev
+       ```
+   The frontend will be available at http://localhost:5173 (or the port specified in the terminal).
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
