@@ -1,0 +1,34 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landing Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="{% static 'css/style3.css' %}">
+
+</head>
+<body>
+    <div class="content-main">
+        <div class="header">
+            <p >Matching Original Image</p>
+        </div>
+        
+        <div class="image-display">
+            {% if image and similarity_score %}
+                <img src="{{ image }}" alt="Matching image">
+                <p>Similarity Score : {{ similarity_score}}</p>
+            
+            {% else %}
+                <p class="image-display-error"> Matching Image not found</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
+
