@@ -9,6 +9,7 @@ const Home = () => {
   const [orgArr,setOrgArr]=useState<number[]>([]) // for original array indexes
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGroups([]) //remove groups while change inputs
+    setOrgArr([]) //remove original array 
     const files = e.target.files;
     if (files) {
       setSelectedFiles(Array.from(files));
@@ -19,6 +20,7 @@ const Home = () => {
     try {
       e.preventDefault();
       const response = await uploadImages(selectedFiles);
+      console.log(response)
       const grps: File[][] = [];     
       const originals=new Set(response.originals) 
       response.groups.forEach((group: number[]) => {
