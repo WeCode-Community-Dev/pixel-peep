@@ -1,0 +1,59 @@
+import os
+import torch
+import numpy as np
+from PIL import Image
+from torchvision import models, transforms
+from sklearn.metrics.pairwise import cosine_similarity
+
+# Load pretrained ResNet50 and remove classifier
+resnet = models.resnet50(pretrained=True)
+resnet = torch.nn.Sequential(*list(resnet.children())[:-1])  # Remove layer because it is not needed (last layers) only needs features
+resnet.eval()
+
+# Image preprocessing for ResNet50
+transform = transforms.Compose([
+    transforms.Resize((224, 224)),
+    transforms.ToTensor(),
+])
+
+def get_embedding(image_path):
+    image = Image.open(image_path).convert("RGB")
+    image = transform(image).unsqueeze(0)
+    with torch.no_grad():
+        embedding = resnet(image).squeeze().numpy()
+    return embedding.reshape(1, -1)
+
+# Load all original embeddings
+def load_original_embeddings(folder_path):
+    embeddings = []
+    filenames = []
+    for file in os.listdir(folder_path):
+        if file.lower().endswith((".jpg", ".png")):
+            path = os.path.join(folder_path, file)
+            emb = get_embedding(path)
+            embeddings.append(emb)
+            filenames.append(file)
+    return np.vstack(embeddings), filenames
+
+# Match test image to originals
+def find_best_match(test_path, original_folder, threshold=0.85):
+    originals, names = load_original_embeddings(original_folder)
+    test_emb = get_embedding(test_path)
+    sims = cosine_similarity(test_emb, originals)[0]
+    best_idx = np.argmax(sims)
+    best_score = sims[best_idx]
+
+    print(f"Best match: {names[best_idx]}")
+    print(f"Similarity score: {best_score:.3f}")
+
+    if best_score >= threshold:
+        print(" Match found !")
+    else:
+        print(" No match found.")
+
+
+find_best_match(
+        test_path=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\test\\meme.png",
+        original_folder=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\originals",
+        threshold=0.85
+    )
