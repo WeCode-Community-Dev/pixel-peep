@@ -65,7 +65,7 @@ export function FileUploader()
             </div>
            
 
-            <div className="w-[400px] h-[400px] border border-gray-400 overflow-hidden mt-2">
+            <div className="w-[300px] h-[auto] border border-gray-400 overflow-hidden mt-2">
             {file1&&(
                 <div>
                     <img src={URL.createObjectURL(file1)} alt="Uploaded preview" className="object-contain w-full h-full"></img>
@@ -81,7 +81,7 @@ export function FileUploader()
             </div>
            
 
-            <div className="w-[400px] h-[400px] border border-gray-400 overflow-hidden">
+            <div className="w-[300px] h-[auto] border border-gray-400 overflow-hidden">
             {file2&&(
                 <div>
                     <img src={URL.createObjectURL(file2)} alt="Uploaded preview" className="object-contain w-full h-full"></img>

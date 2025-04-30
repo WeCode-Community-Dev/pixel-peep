@@ -34,10 +34,13 @@ async def checkCompatible(file1:UploadFile=File(...),file2:UploadFile=File(...))
   kp=sift.detect(gray1,None)
   kp,des1=sift.compute(gray1,kp)
 
+  print(des1)
+ 
+
   kp1=sift.detect(gray2,None)
   kp1,des2=sift.compute(gray2,kp1)
 
-
+  print(des2)
 
   img1=cv2.drawKeypoints(gray1,kp,None,(0,0,255),flags=0)
   img2=cv2.drawKeypoints(gray2,kp1,None,(0,0,255),flags=0)
