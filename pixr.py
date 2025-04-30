@@ -7,13 +7,15 @@ from sklearn.metrics.pairwise import cosine_similarity
 
 # Load pretrained ResNet50 and remove classifier
 resnet = models.resnet50(pretrained=True)
-resnet = torch.nn.Sequential(*list(resnet.children())[:-1])  # Remove layer because it is not needed (last layers) only needs features
+resnet = torch.nn.Sequential(*list(resnet.children())[:-1])  # Remove layer because it is not needed (last layers) only needs features//classifier
 resnet.eval()
 
 # Image preprocessing for ResNet50
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                         std=[0.229, 0.224, 0.225]),
 ])
 
 def get_embedding(image_path):
@@ -55,5 +57,5 @@ def find_best_match(test_path, original_folder, threshold=0.85):
 find_best_match(
         test_path=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\test\\meme.png",
         original_folder=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\originals",
-        threshold=0.85
+        threshold=0.88
     )
