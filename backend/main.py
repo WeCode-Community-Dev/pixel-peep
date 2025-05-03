@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi import UploadFile,File
+from fastapi import UploadFile,File, Form
 from fastapi.middleware.cors import CORSMiddleware
 from services.image_compare import img_classification
 
@@ -22,9 +22,8 @@ app.add_middleware(
 )
 
 @app.post("/images")
-async def uploadfiles(images:list[UploadFile ]=File(...)):
-
-    groups,originals=await img_classification(images)
+async def uploadfiles(images:list[UploadFile ]=File(...), lastModified: list[str] = Form(...),):
+    groups,originals=await img_classification(images,lastModified)
 
     return {"message": "file uploaded",'groups':groups,'originals':originals}
 

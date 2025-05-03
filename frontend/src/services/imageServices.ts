@@ -8,7 +8,9 @@ export const uploadImages = async (images: File[]) => {
     }
     const formData = new FormData();
     images.forEach((image) => {
+      console.log(image.lastModified)
       formData.append("images", image);
+      formData.append('lastModified',image.lastModified.toString())
     });
 
     const response=await axiosInstance.post('/images',formData)

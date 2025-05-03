@@ -14,7 +14,7 @@ def is_allowed_file(filename: str | None) -> bool:
         return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
     return False
 
-async def img_classification(images:list[UploadFile]):
+async def img_classification(images:list[UploadFile],last_modified:list[str]):
     histograms=[]
     cv2_images=[]
     file_sizes=[]
@@ -34,7 +34,7 @@ async def img_classification(images:list[UploadFile]):
     groups=group_images(com_mtx)
     originals=set()
     for group in groups:
-        original=find_original(cv2_images,group,com_mtx,file_sizes,hash_values)
+        original=find_original(cv2_images,group,com_mtx,file_sizes,hash_values,last_modified)
         originals.add(original)
 
     return groups,originals   
@@ -116,7 +116,7 @@ def create_comparison_matrix(histograms,images,hash_values):
 def group_images(matrix):
     # Set your similarity threshold
     threshold = 0.75
-
+    print(matrix)
     n=len(matrix)
     graph=Graph()
     for i in range(n):
@@ -129,7 +129,7 @@ def group_images(matrix):
 
     return groups
 
-def find_original(images, group,com_matrix,file_sizes,hash_values):
+def find_original(images, group,com_matrix,file_sizes,hash_values,last_modified):
     sharp_scores=[]
     size_scores=[]
     resolution_scores=[]
@@ -160,8 +160,12 @@ def find_original(images, group,com_matrix,file_sizes,hash_values):
     nor_hash_scores = normalizes(hash_dist_scores)
    
     scores=[]
+    last_m_time=[]
     for i,imgIdx in enumerate(group):
-        scores.append({imgIdx:nor_sharp[i]*0.25 + nor_size[i] *0.15 + nor_res[i]*0.2 + nor_similarity[i]*0.4 +(1/(1+nor_hash_scores[i]))})
+        # Weighted scoring formula
+        # print(last_modified[imgIdx])
+        score=nor_sharp[i]*0.25 + nor_size[i] *0.15 + nor_res[i]*0.2 + nor_similarity[i]*0.4 +(1/(1+nor_hash_scores[i]))
+        scores.append({imgIdx:score})
 
     key=max_score(scores)
     return key
@@ -199,3 +203,6 @@ def compute_hash_dist(index,group,hash_values):
     for i in group:
         h_score+=hash_values[index]-hash_values[i]
     return h_score
+
+
+

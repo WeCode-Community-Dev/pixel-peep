@@ -7,6 +7,8 @@ const Home = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [groups, setGroups] = useState<File[][]>([]);
   const [orgArr,setOrgArr]=useState<number[]>([]) // for original array indexes
+  const [loading,setLoading]=useState(false)
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setGroups([]) //remove groups while change inputs
     setOrgArr([]) //remove original array 
@@ -19,6 +21,7 @@ const Home = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     try {
       e.preventDefault();
+      setLoading(true)
       const response = await uploadImages(selectedFiles);
       console.log(response)
       const grps: File[][] = [];     
@@ -42,6 +45,8 @@ const Home = () => {
       } else {
         console.error('Unexpected error:');
       }
+    }finally{
+      setLoading(false)
     }
   };
 
@@ -72,8 +77,9 @@ const Home = () => {
         <button
           className="m-2 w-full bg-green-500 hover:bg-green-600"
           type="submit"
+          disabled={loading}
         >
-          Submit
+           {loading ?'Submitting':'Submit'}
         </button>
       </form>
 

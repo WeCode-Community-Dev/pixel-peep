@@ -8,7 +8,6 @@ interface ImageGroupsProps {
 }
 
 const ImageGroups: React.FC<ImageGroupsProps> = ({ groups,originals }) => {
-  console.log(originals)
   return (
     <div className="grid gap-4">
       <h1 className="text-2xl text-center  font-bold">Image Groups</h1>
@@ -22,7 +21,7 @@ const ImageGroups: React.FC<ImageGroupsProps> = ({ groups,originals }) => {
             {group.map((file, idx) => (
               
               <div className="relative">
-               <span className="text-green-600 absolute z-10 font-bold bg-white rounded m-1">{originals[groupIndex]==idx ? 'original ✅':''} {idx},{originals[groupIndex]}</span>
+               <span className="text-green-600 absolute z-10 font-bold bg-white rounded m-1">{originals[groupIndex]==idx ? 'original ✅':''} </span>
               <ImagePreview file={file} index={idx} />
               </div>
             ))}

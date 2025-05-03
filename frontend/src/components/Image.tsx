@@ -10,7 +10,7 @@ const ImagePreview: React.FC<ImagePreviewProps> = ({ file, index }) => {
   return (
     <div
       key={index}
-      className="relative rounded overflow-hidden border border-gray-300 shadow-sm p-2"
+      className="relative rounded overflow-hidden border max-w-[200px] border-gray-300 shadow-sm p-2"
     >
       <img
         src={fileUrl}
