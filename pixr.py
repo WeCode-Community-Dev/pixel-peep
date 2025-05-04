@@ -37,7 +37,7 @@ def load_original_embeddings(folder_path):
     return np.vstack(embeddings), filenames
 
 # Match test image to originals
-def find_best_match(test_path, original_folder, threshold=0.85):
+def find_best_match(test_path, original_folder, threshold=0.88):
     originals, names = load_original_embeddings(original_folder)
     test_emb = get_embedding(test_path)
     sims = cosine_similarity(test_emb, originals)[0]
@@ -54,7 +54,7 @@ def find_best_match(test_path, original_folder, threshold=0.85):
 
 
 find_best_match(
-        test_path=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\test\\meme.png",
-        original_folder=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\originals",
+        #test_path=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\test\\meme.png",
+        #original_folder=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\originals",
         threshold=0.88
     )
