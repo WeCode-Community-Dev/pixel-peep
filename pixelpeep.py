@@ -187,7 +187,9 @@ def test_images(image_path):
         print(f"No similar image found. [{(time.time() - start_time):.4f} seconds]")
 
 
-train_images("downloaded_images")
+"""
+# Example usage:
+ 
+train_images("input_images")
 test_images("variants/test_1.jpg")
-test_images("variants/test_2.jpg")
-test_images("variants/test_3.jpg")
+"""
