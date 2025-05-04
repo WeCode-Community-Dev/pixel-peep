@@ -1,0 +1,158 @@
+.results-section {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1.5rem;
+  margin-top: 1rem;
+}
+
+.result-card {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.card-header {
+  padding: 1rem;
+}
+
+.comparison-image {
+  width: 100%;
+  height: 150px;
+  overflow: hidden;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+}
+
+.comparison-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.comparison-details {
+  padding: 0.5rem 0;
+}
+
+.method-info {
+  margin-bottom: 0.75rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eee;
+}
+
+.method-label {
+  font-weight: 600;
+  color: #4a5568;
+  margin-right: 0.5rem;
+}
+
+.method-value {
+  color: #2d3748;
+}
+
+.scores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.score-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.score-label {
+  color: #4a5568;
+  font-weight: 500;
+}
+
+.score-value {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.threshold-indicator {
+  font-size: 0.75rem;
+  color: #3182ce;
+  font-weight: 500;
+}
+
+.result-status {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.result-status.pirated {
+  background-color: #fff5f5;
+  color: #e53e3e;
+}
+
+.result-status.not-pirated {
+  background-color: #f0fff4;
+  color: #38a169;
+}
+
+.status-icon {
+  display: flex;
+  align-items: center;
+}
+
+.icon-pirated {
+  color: #e53e3e;
+}
+
+.icon-original {
+  color: #38a169;
+}
+
+.status-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Animation for status icons */
+.status-icon svg {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.metrics {
+  font-size: 0.9rem;
+}
+
+.metrics p {
+  margin: 0.5rem 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.indicator {
+  font-size: 0.8rem;
+  color: #2196f3;
+  font-weight: 500;
+} 
