@@ -3,14 +3,14 @@ import torch
 import numpy as np
 from PIL import Image
 from torchvision import models, transforms
-from sklearn.metrics.pairwise import cosine_similarity
+#from sklearn.metrics.pairwise import cosine_similarity
 
-# Load pretrained ResNet50 and remove classifier
+
 resnet = models.resnet50(pretrained=True)
 resnet = torch.nn.Sequential(*list(resnet.children())[:-1])  # Remove layer because it is not needed (last layers) only needs features//classifier
 resnet.eval()
-orginal_folder = r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\ originals"
-# Image preprocessing for ResNet50
+
+
 transform = transforms.Compose([
     transforms.Resize((224, 224)),
     transforms.ToTensor(),
@@ -24,8 +24,8 @@ def get_embedding(image_path):
         embedding = resnet(image).squeeze().numpy()
     return embedding.reshape(1, -1)
 
-# Load all original embeddings
-def load_original_embeddings(folder_path):
+
+def train_images(folder_path):
     embeddings = []
     filenames = []
     for file in os.listdir(folder_path):
@@ -37,7 +37,7 @@ def load_original_embeddings(folder_path):
     return np.vstack(embeddings), filenames
 
 original_folder=r"C:\\Users\\LENOVO\\Documents\\PROJECTS\\pixel-peep\\images\\originals"
-originals, names = load_original_embeddings(original_folder)
+originals, names = train_images(original_folder)
 
 #never mind this part 
 '''
